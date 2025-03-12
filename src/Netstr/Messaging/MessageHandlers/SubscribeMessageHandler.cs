@@ -6,6 +6,7 @@ using Netstr.Messaging.Subscriptions;
 using Netstr.Messaging.Subscriptions.Validators;
 using Netstr.Options;
 using System.Text.Json;
+using Netstr.Whitelist;
 
 namespace Netstr.Messaging.MessageHandlers
 {
