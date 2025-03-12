@@ -90,7 +90,7 @@ namespace Netstr.Messaging.MessageHandlers
             };
         }
 
-        private protected override void RaiseSubscriptionException(string subscriptionId, string message, string logMessage)
+        protected override void RaiseSubscriptionException(string subscriptionId, string message, string logMessage)
         {
             var detailedMessage = $"Subscription request '{subscriptionId}' failed: {message}";
             this.logger.LogWarning(detailedMessage);
