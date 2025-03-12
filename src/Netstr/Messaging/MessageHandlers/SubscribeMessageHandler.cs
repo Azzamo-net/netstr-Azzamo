@@ -94,7 +94,7 @@ namespace Netstr.Messaging.MessageHandlers
         {
             var detailedMessage = $"Subscription request '{subscriptionId}' failed: {message}";
             this.logger.LogWarning(detailedMessage);
-            throw new SubscriptionProcessingException(detailedMessage);
+            throw new SubscriptionProcessingException(detailedMessage, logMessage, subscriptionId);
         }
 
         private async Task FetchWhitelistAsync()
