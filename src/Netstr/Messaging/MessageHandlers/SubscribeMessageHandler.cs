@@ -51,7 +51,7 @@ namespace Netstr.Messaging.MessageHandlers
             var maxSubscriptions = this.limits.Value.Subscriptions.MaxSubscriptions;
             if (maxSubscriptions > 0 && adapter.Subscriptions.GetAll().Where(x => x.Key != subscriptionId).Count() >= maxSubscriptions)
             {
-                adapter.SendError("You have exceeded the maximum number of subscriptions allowed.");
+                Console.WriteLine("You have exceeded the maximum number of subscriptions allowed.");
                 return;
             }
 

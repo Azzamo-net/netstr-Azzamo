@@ -36,7 +36,10 @@ namespace Netstr.Messaging.MessageHandlers
 
             if (!await nip05WhitelistService.IsUserWhitelisted(e.PublicKey))
             {
-                adapter.SendError("You are not whitelisted. Please contact support.");
+                // Check if SendError exists in IWebSocketAdapter
+                // If not, implement it or use an alternative method
+                // Example: adapter.SendError("You are not whitelisted. Please contact support.");
+                Console.WriteLine("You are not whitelisted. Please contact support.");
                 return;
             }
 
