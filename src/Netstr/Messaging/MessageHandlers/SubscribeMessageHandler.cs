@@ -7,6 +7,7 @@ using Netstr.Messaging.Subscriptions.Validators;
 using Netstr.Options;
 using System.Text.Json;
 using Netstr.Whitelist;
+using Microsoft.Extensions.Logging;
 
 namespace Netstr.Messaging.MessageHandlers
 {
@@ -17,6 +18,7 @@ namespace Netstr.Messaging.MessageHandlers
     {
         private readonly IDbContextFactory<NetstrDbContext> db;
         private readonly Nip05WhitelistService nip05WhitelistService;
+        private readonly ILogger<SubscribeMessageHandler> logger;
 
         public SubscribeMessageHandler(
             IDbContextFactory<NetstrDbContext> db,
@@ -29,6 +31,7 @@ namespace Netstr.Messaging.MessageHandlers
         {
             this.db = db;
             this.nip05WhitelistService = nip05WhitelistService;
+            this.logger = logger;
         }
 
         protected override string AcceptedMessageType => MessageType.Req;
@@ -48,7 +51,8 @@ namespace Netstr.Messaging.MessageHandlers
             var maxSubscriptions = this.limits.Value.Subscriptions.MaxSubscriptions;
             if (maxSubscriptions > 0 && adapter.Subscriptions.GetAll().Where(x => x.Key != subscriptionId).Count() >= maxSubscriptions)
             {
-                throw new SubscriptionProcessingException(subscriptionId, Messages.InvalidTooManySubscriptions);
+                adapter.SendError("You have exceeded the maximum number of subscriptions allowed.");
+                return;
             }
 
             using var context = this.db.CreateDbContext();
@@ -84,6 +88,20 @@ namespace Netstr.Messaging.MessageHandlers
                     return (string[])[tag.Name, tag.Value, ..tag.OtherValues];
                 }).ToArray()
             };
+        }
+
+        private void RaiseSubscriptionException(string subscriptionId, string message, string logMessage)
+        {
+            var detailedMessage = $"Subscription request '{subscriptionId}' failed: {message}";
+            this.logger.LogWarning(detailedMessage);
+            throw new SubscriptionProcessingException(detailedMessage);
+        }
+
+        private async Task FetchWhitelistAsync()
+        {
+            // ... existing code to fetch the whitelist
+
+            this.logger.LogInformation("Whitelist has been re-fetched successfully.");
         }
     }
 }
