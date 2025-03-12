@@ -92,7 +92,7 @@ namespace Netstr.Messaging.MessageHandlers
 
         protected override void RaiseSubscriptionException(string subscriptionId, string message, string? logMessage)
         {
-            if (message == null)
+            if (string.IsNullOrEmpty(message))
             {
                 message = "An unknown error occurred.";
             }
