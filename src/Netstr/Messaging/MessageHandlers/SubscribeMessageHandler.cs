@@ -39,9 +39,9 @@ namespace Netstr.Messaging.MessageHandlers
             IEnumerable<SubscriptionFilter> filters,
             IEnumerable<JsonDocument> remainingParameters)
         {
-            if (!await nip05WhitelistService.IsUserWhitelisted(adapter.Context.PublicKey))
+            if (adapter.Context.PublicKey == null || !await nip05WhitelistService.IsUserWhitelisted(adapter.Context.PublicKey))
             {
-                adapter.SendError("Your Premium time has expired. Please top-up your time on azzamo.net/pay.");
+                Console.WriteLine("Your Premium time has expired. Please top-up your time on azzamo.net/pay.");
                 return;
             }
 

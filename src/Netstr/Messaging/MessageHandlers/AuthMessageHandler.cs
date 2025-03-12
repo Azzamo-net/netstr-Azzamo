@@ -36,7 +36,7 @@ namespace Netstr.Messaging.MessageHandlers
 
             if (!await nip05WhitelistService.IsUserWhitelisted(e.PublicKey))
             {
-                adapter.SendError("Your Premium time has expired. Please top-up your time on azzamo.net/pay.");
+                Console.WriteLine("Your Premium time has expired. Please top-up your time on azzamo.net/pay.");
                 return;
             }
 
