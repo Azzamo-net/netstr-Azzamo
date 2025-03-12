@@ -13,32 +13,36 @@ namespace Netstr.Messaging.MessageHandlers
         private readonly ILogger<AuthMessageHandler> logger;
         private readonly IEnumerable<IEventValidator> validators;
         private readonly IHttpContextAccessor http;
+        private readonly Nip05WhitelistService nip05WhitelistService;
 
         public AuthMessageHandler(
             ILogger<AuthMessageHandler> logger,
             IEnumerable<IEventValidator> validators,
-            IHttpContextAccessor http)
+            IHttpContextAccessor http,
+            Nip05WhitelistService nip05WhitelistService)
         {
             this.logger = logger;
             this.validators = validators;
             this.http = http;
+            this.nip05WhitelistService = nip05WhitelistService;
         }
 
         public bool CanHandleMessage(string type) => type == MessageType.Auth;
 
-        public Task HandleMessageAsync(IWebSocketAdapter adapter, JsonDocument[] parameters)
+        public async Task HandleMessageAsync(IWebSocketAdapter adapter, JsonDocument[] parameters)
         {
             var e = ValidateAuthEvent(parameters, adapter.Context);
 
+            if (!await nip05WhitelistService.IsUserWhitelisted(e.PublicKey))
+            {
+                adapter.SendError("Your Premium time has expired. Please top-up your time on azzamo.net/pay.");
+                return;
+            }
+
             this.logger.LogInformation($"Authenticating client {adapter.Context.ClientId}.");
-
             adapter.Context.Authenticate(e.PublicKey);
-
             this.logger.LogInformation($"Client {adapter.Context.ClientId} successfully authenticated.");
-
             adapter.SendOk(e.Id);
-
-            return Task.CompletedTask;
         }
 
         private Event ValidateAuthEvent(JsonDocument[] parameters, ClientContext context)

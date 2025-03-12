@@ -15,16 +15,19 @@ namespace Netstr.Messaging.MessageHandlers
     public class SubscribeMessageHandler : FilterMessageHandlerBase
     {
         private readonly IDbContextFactory<NetstrDbContext> db;
+        private readonly Nip05WhitelistService nip05WhitelistService;
 
         public SubscribeMessageHandler(
             IDbContextFactory<NetstrDbContext> db,
             IEnumerable<ISubscriptionRequestValidator> validators,
             IOptions<LimitsOptions> limits,
             IOptions<AuthOptions> auth,
-            ILogger<SubscribeMessageHandler> logger)
+            ILogger<SubscribeMessageHandler> logger,
+            Nip05WhitelistService nip05WhitelistService)
             : base(validators, limits, auth, logger)
         {
             this.db = db;
+            this.nip05WhitelistService = nip05WhitelistService;
         }
 
         protected override string AcceptedMessageType => MessageType.Req;
@@ -35,6 +38,12 @@ namespace Netstr.Messaging.MessageHandlers
             IEnumerable<SubscriptionFilter> filters,
             IEnumerable<JsonDocument> remainingParameters)
         {
+            if (!await nip05WhitelistService.IsUserWhitelisted(adapter.Context.PublicKey))
+            {
+                adapter.SendError("Your Premium time has expired. Please top-up your time on azzamo.net/pay.");
+                return;
+            }
+
             var maxSubscriptions = this.limits.Value.Subscriptions.MaxSubscriptions;
             if (maxSubscriptions > 0 && adapter.Subscriptions.GetAll().Where(x => x.Key != subscriptionId).Count() >= maxSubscriptions)
             {
