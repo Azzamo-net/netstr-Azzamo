@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Netstr.Data;
 using Netstr.Messaging.Models;
@@ -90,7 +90,7 @@ namespace Netstr.Messaging.MessageHandlers
             };
         }
 
-        private override void RaiseSubscriptionException(string subscriptionId, string message, string logMessage)
+        private protected override void RaiseSubscriptionException(string subscriptionId, string message, string logMessage)
         {
             var detailedMessage = $"Subscription request '{subscriptionId}' failed: {message}";
             this.logger.LogWarning(detailedMessage);
