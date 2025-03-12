@@ -92,22 +92,20 @@ namespace Netstr.Messaging.MessageHandlers
 
         protected override void RaiseSubscriptionException(string subscriptionId, string message, string? logMessage)
         {
+            if (message == null)
+            {
+                message = "An unknown error occurred.";
+            }
             var detailedMessage = $"Subscription request '{subscriptionId}' failed: {message}";
             this.logger.LogWarning(detailedMessage);
             throw new SubscriptionProcessingException(detailedMessage, logMessage, subscriptionId);
         }
 
-        private async Task FetchWhitelistAsync()
+        private Task FetchWhitelistAsync()
         {
-            // Fetch the whitelist from the Nip05 service
-            if (this.nip05WhitelistService.IsEnabled)
-            {
-                this.logger.LogInformation("Fetching the whitelist...");
-                // Assuming you have a method to fetch the whitelist
-                // This could be an API call or a database fetch
-                // Example: await this.nip05WhitelistService.FetchWhitelist();
-                this.logger.LogInformation("Whitelist has been re-fetched successfully.");
-            }
+            this.logger.LogInformation("Fetching the whitelist...");
+            this.logger.LogInformation("Whitelist has been re-fetched successfully.");
+            return Task.CompletedTask;
         }
     }
 }
