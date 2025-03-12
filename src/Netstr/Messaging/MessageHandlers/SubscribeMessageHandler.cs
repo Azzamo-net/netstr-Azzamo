@@ -18,7 +18,7 @@ namespace Netstr.Messaging.MessageHandlers
     {
         private readonly IDbContextFactory<NetstrDbContext> db;
         private readonly Nip05WhitelistService nip05WhitelistService;
-        private readonly ILogger<SubscribeMessageHandler> logger;
+        private new readonly ILogger<SubscribeMessageHandler> logger;
 
         public SubscribeMessageHandler(
             IDbContextFactory<NetstrDbContext> db,
